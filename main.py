@@ -45,11 +45,13 @@ class Window(QMainWindow, design.Ui_MainWindow):
         self.lineEdit.textChanged.connect(self.edit_text)
         self.namedoc = ''
 
+    # Перезапуск интерфейса (Restarting the interface)
     def restart(self):
         self.hide()
         self.__init__()
         self.show()
 
+    # Активация поиска контактов в записной книге (Activating contact search in the notebook)
     def edit_text(self):
         if self.comboBox.currentIndex() == 0:
             check = checknum.my_contact(self.lineEdit.text(), self.config['language'], self.config['translating'])
@@ -67,6 +69,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
             else:
                 self.tableWidget.setRowCount(0)
 
+    # Настройка динамики менюбара (Setting up the menubar dynamics)
     def changemenubar(self):
         if self.menubar.height():
             self.menubar.hide()
@@ -79,6 +82,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
             self.setMaximumSize(QtCore.QSize(800, 610))
             self.seemenu.setIcon(self.icon11)
 
+    # Обработчик настроек (Settings Handler)
     def settings(self):
         self.Light.triggered.connect(self.light)
         self.Dark.triggered.connect(self.dark)
@@ -86,6 +90,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
         self.English.triggered.connect(self.english)
         self.Translating.triggered.connect(self.translate)
 
+    # Включение/выключение перевода контактов (Enabling/disabling contact translation)
     def translate(self):
         if self.Translating.isChecked():
             self.Translating.setChecked(True)
@@ -97,6 +102,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
             json.dump(self.config, file)
         self.restart()
 
+    # Настройка темы: Светлая (Theme Setting: Light)
     def light(self):
         self.Light.setChecked(True)
         self.Dark.setChecked(False)
@@ -105,6 +111,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
             json.dump(self.config, file)
         self.restart()
 
+    # Настройка темы: Тёмная (Theme Setting: Dark)
     def dark(self):
         self.Dark.setChecked(True)
         self.Light.setChecked(False)
@@ -113,6 +120,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
             json.dump(self.config, file)
         self.restart()
 
+    # Настройка языка: Русский (Localization settings: Russian)
     def russian(self):
         self.Russian.setChecked(True)
         self.English.setChecked(False)
@@ -121,6 +129,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
             json.dump(self.config, file)
         self.restart()
 
+    # Настройка языка: Английский (Localization Settings: English)
     def english(self):
         self.English.setChecked(True)
         self.Russian.setChecked(False)
@@ -391,6 +400,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
         if self.comboBox.currentIndex() == 2:
             check = checknum.search_by_one_number(self.lineEdit.text(), self.config['language'],
                                                   self.config['translating'])
+            # Действия исключений (Exception Actions)
             if check == 404:
                 if self.English.isChecked():
                     QMessageBox.critical(self, "Warning!", f"{self.lineEdit.text()}: Unknown number.",
@@ -422,6 +432,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
                     QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
             else:
                 self.plainTextEdit.setPlainText(check)
+        # Настройка поиска из текстового документа (Setting up a search from a text document)
         elif self.comboBox.currentIndex() == 3:
             check = checknum.search_from_a_text_document(self.namedoc, self.lineEdit.text(),
                                                          self.config['language'], self.config['translating'])
@@ -444,7 +455,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
                                                             "Известная информация"
                                                             "указана в документе.",
                                          QMessageBox.Ok)
-                # Действия исключений (Exception Actions)
+            # Действия исключений (Exception Actions)
             elif check == 406:
                 if self.English.isChecked():
                     QMessageBox.critical(self, "Warning!", "There is no document for reading/writing.",
@@ -463,6 +474,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
                 elif self.Russian.isChecked():
                     QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
 
+    # Настройка добавления контакта (Setting up adding a contact)
     def addcontact(self):
         check = checknum.add_contact(self.lineEdit.text(), self.plainTextEdit.toPlainText())
         if not check:
@@ -497,6 +509,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
             elif self.Russian.isChecked():
                 QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
 
+    # Настройка изменения контакта (Setting up a contact change)
     def editcontact(self):
         check = checknum.edit_contact(self.lineEdit.text(), self.plainTextEdit.toPlainText())
         if not check:
@@ -531,6 +544,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
             elif self.Russian.isChecked():
                 QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
 
+    # Настройка удаления контакта (Setting up Contact Deletion)
     def deletecontact(self):
         check = checknum.delete_contact(self.lineEdit.text())
         if not check:
@@ -559,6 +573,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
                 QMessageBox.critical(self, "Warning!", "Critical error.", QMessageBox.Ok)
             elif self.Russian.isChecked():
                 QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
+
 
 # Инициализация ошибок (Error Initialization)
 class NumError(Exception):
