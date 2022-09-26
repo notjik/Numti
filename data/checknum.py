@@ -81,10 +81,10 @@ def search_by_one_number(num, locale, translate):
                                                 if num[1:].startswith(i):
                                                     if locale == 'en':
                                                         info.append(
-                                                            ['Operator: Unknown', 'Region: Unknown'])
+                                                            [f'Region: {cdg[1]}'])
                                                     elif locale == 'ru':
                                                         info.append(
-                                                            ['Оператор: Неизвестно', 'Регион: Неизвестно'])
+                                                            [f'Регион: {cdg[1]}'])
                                                     flag = False
                                                     break
                                         else:
@@ -133,7 +133,7 @@ def search_by_one_number(num, locale, translate):
     except ConnectError or ConnectTimeout or CloseError:
         return 499
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
@@ -177,8 +177,8 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
         with open(f'{readdoc[:readdoc.rfind("/") + 1]}{sdoc}', 'w',
                   encoding='utf-8') as f:
             # Обработка всех значений (Processing all values)
-            flag = True
             for num in text:
+                flag = True
                 # Проверка на правильность номера (Checking for the correctness of the number)
                 if num.isdigit():
                     info = []
@@ -225,12 +225,10 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
                                                         if num[1:].startswith(i):
                                                             if locale == 'en':
                                                                 info.append(
-                                                                    ['Operator: Unknown',
-                                                                     'Region: Unknown'])
+                                                                    [f'Region: {cdg[1]}'])
                                                             elif locale == 'ru':
                                                                 info.append(
-                                                                    ['Оператор: Неизвестно',
-                                                                     'Регион: Неизвестно'])
+                                                                    [f'Регион: {cdg[1]}'])
                                                             flag = False
                                                             break
                                                 else:
@@ -290,7 +288,7 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
     except ConnectError or ConnectTimeout or CloseError:
         return 499
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
@@ -341,7 +339,7 @@ def add_contact(num, information):
     except ContactError:
         return 4004
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
@@ -394,7 +392,7 @@ def edit_contact(num, information):
     except ContactError:
         return 4004
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
@@ -441,7 +439,7 @@ def delete_contact(num):
     except ContactError:
         return 4004
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
@@ -531,10 +529,10 @@ def my_contact(text, locale, translate):
                                                 if num[1:].startswith(i):
                                                     if locale == 'en':
                                                         info.append(
-                                                            ['Operator: Unknown', 'Region: Unknown'])
+                                                            [f'Region: {cdg[1]}'])
                                                     elif locale == 'ru':
                                                         info.append(
-                                                            ['Оператор: Неизвестно', 'Регион: Неизвестно'])
+                                                            [f'Регион: {cdg[1]}'])
                                                     flag = False
                                                     break
                                         else:
@@ -567,13 +565,15 @@ def my_contact(text, locale, translate):
                     res.append('; '.join(i))
                 result = '; '.join(res)
                 res_search[n][3] = result
+            flag = True
         con.close()
         return res_search
     # Действия исключений (Exception Actions)
     except ConnectError or ConnectTimeout or CloseError:
         return 499
-    except Exception:
-        return 520
+    except Exception as e:
+        print(f'{e} | {type(e)}')
+        return 522
 
 
 # Инициализация ошибок (Error Initialization)

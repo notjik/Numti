@@ -55,7 +55,7 @@ class Window(QMainWindow, design.Ui_MainWindow):
     def edit_text(self):
         if self.comboBox.currentIndex() == 0:
             check = checknum.my_contact(self.lineEdit.text(), self.config['language'], self.config['translating'])
-            if check and check != 499:
+            if check and check != 499 and check != 520:
                 for i, elem in enumerate(check):
                     self.tableWidget.setRowCount(i + 1)
                     self.tableWidget.setItem(i, 0, QTableWidgetItem(elem[1]))
@@ -66,6 +66,25 @@ class Window(QMainWindow, design.Ui_MainWindow):
                     QMessageBox.critical(self, "Warning!", "No connection.", QMessageBox.Ok)
                 elif self.Russian.isChecked():
                     QMessageBox.critical(self, "Предупреждение!", "Нет соединения.", QMessageBox.Ok)
+                check = checknum.my_contact(self.lineEdit.text(), self.config['language'], False)
+                if check and check != 520:
+                    for i, elem in enumerate(check):
+                        self.tableWidget.setRowCount(i + 1)
+                        self.tableWidget.setItem(i, 0, QTableWidgetItem(elem[1]))
+                        self.tableWidget.setItem(i, 1, QTableWidgetItem(elem[2]))
+                        self.tableWidget.setItem(i, 2, QTableWidgetItem(elem[3]))
+                elif check == 520:
+                    if self.English.isChecked():
+                        QMessageBox.critical(self, "Warning!", "Critical error.", QMessageBox.Ok)
+                    elif self.Russian.isChecked():
+                        QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
+                else:
+                    self.tableWidget.setRowCount(0)
+            elif check == 520:
+                if self.English.isChecked():
+                    QMessageBox.critical(self, "Warning!", "Critical error.", QMessageBox.Ok)
+                elif self.Russian.isChecked():
+                    QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
             else:
                 self.tableWidget.setRowCount(0)
 
@@ -425,6 +444,35 @@ class Window(QMainWindow, design.Ui_MainWindow):
                     QMessageBox.critical(self, "Warning!", "No connection.", QMessageBox.Ok)
                 elif self.Russian.isChecked():
                     QMessageBox.critical(self, "Предупреждение!", "Нет соединения.", QMessageBox.Ok)
+                check = checknum.search_by_one_number(self.lineEdit.text(), self.config['language'],
+                                                      False)
+                if check == 404:
+                    if self.English.isChecked():
+                        QMessageBox.critical(self, "Warning!", f"{self.lineEdit.text()}: Unknown number.",
+                                             QMessageBox.Ok)
+                    elif self.Russian.isChecked():
+                        QMessageBox.critical(self, "Предупреждение!", f"{self.lineEdit.text()}: Неизвестный номер.",
+                                             QMessageBox.Ok)
+                elif check == 400:
+                    if self.English.isChecked():
+                        QMessageBox.critical(self, "Warning!", f"{self.lineEdit.text()}: Wrong number dialed.",
+                                             QMessageBox.Ok)
+                    elif self.Russian.isChecked():
+                        QMessageBox.critical(self, "Предупреждение!",
+                                             f"{self.lineEdit.text()}: Неправильно набран номер.",
+                                             QMessageBox.Ok)
+                elif check == 406:
+                    if self.English.isChecked():
+                        QMessageBox.critical(self, "Warning!", "No number entered.", QMessageBox.Ok)
+                    elif self.Russian.isChecked():
+                        QMessageBox.critical(self, "Предупреждение!", "Номер не введён.", QMessageBox.Ok)
+                elif check == 522:
+                    if self.English.isChecked():
+                        QMessageBox.critical(self, "Warning!", "Critical error.", QMessageBox.Ok)
+                    elif self.Russian.isChecked():
+                        QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
+                else:
+                    self.plainTextEdit.setPlainText(check)
             elif check == 522:
                 if self.English.isChecked():
                     QMessageBox.critical(self, "Warning!", "Critical error.", QMessageBox.Ok)
@@ -468,6 +516,40 @@ class Window(QMainWindow, design.Ui_MainWindow):
                     QMessageBox.critical(self, "Warning!", "No connection.", QMessageBox.Ok)
                 elif self.Russian.isChecked():
                     QMessageBox.critical(self, "Предупреждение!", "Нет соединения.", QMessageBox.Ok)
+                check = checknum.search_from_a_text_document(self.namedoc, self.lineEdit.text(),
+                                                             self.config['language'], False)
+                if not check:
+                    # Информация о законченной операции (Information about the completed operation)
+                    if self.English.isChecked():
+                        QMessageBox.information(self, "Done!", "The information is saved.", QMessageBox.Ok)
+                    elif self.Russian.isChecked():
+                        QMessageBox.information(self, "Готово!", "Информация сохранена.", QMessageBox.Ok)
+                elif check == 206:
+                    if self.English.isChecked():
+                        QMessageBox.critical(self, "Attention!", "One of the entered numbers "
+                                                                 "is entered incorrectly. "
+                                                                 "The known information is "
+                                                                 "indicated in the document.",
+                                             QMessageBox.Ok)
+                    elif self.Russian.isChecked():
+                        QMessageBox.critical(self, "Внимание!", "Один из введенных номеров"
+                                                                "введен неправильно."
+                                                                "Известная информация"
+                                                                "указана в документе.",
+                                             QMessageBox.Ok)
+                # Действия исключений (Exception Actions)
+                elif check == 406:
+                    if self.English.isChecked():
+                        QMessageBox.critical(self, "Warning!", "There is no document for reading/writing.",
+                                             QMessageBox.Ok)
+                    elif self.Russian.isChecked():
+                        QMessageBox.critical(self, "Предупреждение!", "Не найден документ для чтения/записи.",
+                                             QMessageBox.Ok)
+                elif check == 522:
+                    if self.English.isChecked():
+                        QMessageBox.critical(self, "Warning!", "Critical error.", QMessageBox.Ok)
+                    elif self.Russian.isChecked():
+                        QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
             elif check == 522:
                 if self.English.isChecked():
                     QMessageBox.critical(self, "Warning!", "Critical error.", QMessageBox.Ok)
