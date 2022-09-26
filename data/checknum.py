@@ -1,9 +1,11 @@
+# Импортирование библиотек (Importing libraries)
 import sqlite3
 
 from googletrans import Translator
 from httpcore._exceptions import ConnectTimeout, CloseError, ConnectError
 
 
+# Выполнение поиска по одному номеру (Performing a search by one number)
 def search_by_one_number(num, locale, translate):
     try:
         # Считывание с главной строки (Reading from the main line)
@@ -79,10 +81,10 @@ def search_by_one_number(num, locale, translate):
                                                 if num[1:].startswith(i):
                                                     if locale == 'en':
                                                         info.append(
-                                                            ['Operator: Unknown', 'Region: Unknown'])
+                                                            [f'Region: {cdg[1]}'])
                                                     elif locale == 'ru':
                                                         info.append(
-                                                            ['Оператор: Неизвестно', 'Регион: Неизвестно'])
+                                                            [f'Регион: {cdg[1]}'])
                                                     flag = False
                                                     break
                                         else:
@@ -131,10 +133,11 @@ def search_by_one_number(num, locale, translate):
     except ConnectError or ConnectTimeout or CloseError:
         return 499
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
+# Выполнение поиска из текстового документа (Performing a search from a text document)
 def search_from_a_text_document(readdoc, writedoc, locale, translate):
     # Настройка поиска из документа (Setting up a search from a document)
     try:
@@ -162,7 +165,7 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
         rusgor = cur.fetchall()
         cur.execute(f"""SELECT * FROM Postscriptum""")
         pstscrptm = cur.fetchall()
-        # Иноформация была ли варнинг (Information was there a warning)
+        # Информирование: был ли варнинг (Informing: was there a warning)
         wrng = False
         # Запись в исходный файл (Writing to the source file)
         if writedoc[-4::] == '.txt':
@@ -174,8 +177,8 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
         with open(f'{readdoc[:readdoc.rfind("/") + 1]}{sdoc}', 'w',
                   encoding='utf-8') as f:
             # Обработка всех значений (Processing all values)
-            flag = True
             for num in text:
+                flag = True
                 # Проверка на правильность номера (Checking for the correctness of the number)
                 if num.isdigit():
                     info = []
@@ -222,12 +225,10 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
                                                         if num[1:].startswith(i):
                                                             if locale == 'en':
                                                                 info.append(
-                                                                    ['Operator: Unknown',
-                                                                     'Region: Unknown'])
+                                                                    [f'Region: {cdg[1]}'])
                                                             elif locale == 'ru':
                                                                 info.append(
-                                                                    ['Оператор: Неизвестно',
-                                                                     'Регион: Неизвестно'])
+                                                                    [f'Регион: {cdg[1]}'])
                                                             flag = False
                                                             break
                                                 else:
@@ -287,10 +288,11 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
     except ConnectError or ConnectTimeout or CloseError:
         return 499
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
+# Выполнение записи в контактную книгу (Making an entry in the contact book)
 def add_contact(num, information):
     try:
         # Считывание и обработка данных (Data reading and processing)
@@ -337,10 +339,11 @@ def add_contact(num, information):
     except ContactError:
         return 4004
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
+# Выполнение редактирования контактной книги (Performing Contact Book editing)
 def edit_contact(num, information):
     try:
         # Считывание и обработка данных (Data reading and processing)
@@ -367,8 +370,8 @@ def edit_contact(num, information):
                 hv = True
         if hv:
             if information:
-                # Запись информации если номер уже есть в базе данных
-                # (Record information if the number is already in the database)
+                # Обновление информации если номер уже есть в базе данных
+                # (Updating information if the number is already in the database)
                 cur.execute("""UPDATE Postscriptum
                                     SET Info = (?) 
                                         WHERE nmb = (?)""", [information, num])
@@ -376,8 +379,6 @@ def edit_contact(num, information):
             else:
                 raise InfoError
         else:
-            # Запись информации если номера нет в базе данных
-            # (Recording information if the number is not in the database)
             raise ContactError
         con.close()
         return 0
@@ -391,10 +392,11 @@ def edit_contact(num, information):
     except ContactError:
         return 4004
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
+# Выполнение удаления из книги контактов (Performing deletion from the contact book)
 def delete_contact(num):
     try:
         # Считывание и обработка данных (Data reading and processing)
@@ -420,6 +422,8 @@ def delete_contact(num):
             if num == i[0]:
                 hv = True
         if hv:
+            # Удаление информации если номер есть в базе данных
+            # (Deleting information if the number is in the database)
             cur.execute("""DELETE FROM Postscriptum
                                     WHERE nmb = (?)""", [num])
             con.commit()
@@ -435,10 +439,11 @@ def delete_contact(num):
     except ContactError:
         return 4004
     except Exception as e:
-        print(e)
+        print(f'{e} | {type(e)}')
         return 522
 
 
+# Выполнение поиска внутри книги контактов (Performing a search inside the contact book)
 def my_contact(text, locale, translate):
     try:
         # Считывание с главной строки (Reading from the main line)
@@ -471,10 +476,10 @@ def my_contact(text, locale, translate):
                     rows.append([row[0], f'+{row[1]}', translated.text, ''])
                 else:
                     rows.append([row[0], f'+{row[1]}', row[2], ''])
-        # # Проверка на неизвестность номера (Checking for unknown numbers)
+        # Проверка на неизвестность номера (Checking for unknown numbers)
         flag = True
-        # # Нахождение информации о номере (Finding information about the number)
-        # # Проверка на правильность набранного номера (Checking for the correctness of the dialed number)
+        # Нахождение информации о номере (Finding information about the number)
+        # Проверка на правильность набранного номера (Checking for the correctness of the dialed number)
         res_search = rows
         for n, row in enumerate(rows):
             num = row[1].lstrip('+')
@@ -524,10 +529,10 @@ def my_contact(text, locale, translate):
                                                 if num[1:].startswith(i):
                                                     if locale == 'en':
                                                         info.append(
-                                                            ['Operator: Unknown', 'Region: Unknown'])
+                                                            [f'Region: {cdg[1]}'])
                                                     elif locale == 'ru':
                                                         info.append(
-                                                            ['Оператор: Неизвестно', 'Регион: Неизвестно'])
+                                                            [f'Регион: {cdg[1]}'])
                                                     flag = False
                                                     break
                                         else:
@@ -560,13 +565,15 @@ def my_contact(text, locale, translate):
                     res.append('; '.join(i))
                 result = '; '.join(res)
                 res_search[n][3] = result
+            flag = True
         con.close()
         return res_search
     # Действия исключений (Exception Actions)
     except ConnectError or ConnectTimeout or CloseError:
         return 499
-    # except Exception:
-    #     return 520
+    except Exception as e:
+        print(f'{e} | {type(e)}')
+        return 522
 
 
 # Инициализация ошибок (Error Initialization)
@@ -586,5 +593,6 @@ class NoNumError(Exception):
     pass
 
 
+# Точка входа теста (Test entry point)
 if __name__ == '__main__':
     print(my_contact('em', 'ru', True))
