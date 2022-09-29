@@ -22,13 +22,16 @@ def search_by_one_number(num, locale, translate):
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
         cur = con.cursor()
-        cur.execute(f"""SELECT * FROM countries_{locale}""")
+        cur.execute(f"""SELECT code, country_{locale}, timezone FROM countries""")
         bdcountry = cur.fetchall()
-        cur.execute(f"""SELECT * FROM rusnummob_{locale}""")
+        cur.execute(f"""SELECT code, operator_{locale}, region_{locale} FROM rusnummob 
+                        JOIN operators ON operators.id = rusnummob.operator
+                        JOIN regions ON regions.id = rusnummob.region""")
         rusmob = cur.fetchall()
-        cur.execute(f"""SELECT * FROM rusnumgor_{locale}""")
+        cur.execute(f"""SELECT code, region_{locale} FROM rusnumgor 
+                        JOIN regions ON regions.id = rusnumgor.region""")
         rusgor = cur.fetchall()
-        cur.execute(f"""SELECT * FROM Postscriptum""")
+        cur.execute(f"""SELECT nmb, info FROM postscriptum""")
         pstscrptm = cur.fetchall()
         # Проверка на неизвестность номера (Checking for unknown numbers)
         flag = True
@@ -39,14 +42,14 @@ def search_by_one_number(num, locale, translate):
             if 15 > len(num) > 8:
                 # Поиск по стране (Search by country)
                 for cdc in bdcountry:
-                    if ',' in cdc[2]:
-                        for i in cdc[2].split(', '):
+                    if ',' in cdc[0]:
+                        for i in cdc[0].split(', '):
                             if num.startswith(i):
-                                info.append([cdc[1], cdc[3]])
+                                info.append([cdc[1], cdc[2]])
                                 break
                     else:
-                        if num.startswith(cdc[2]):
-                            info.append([cdc[1], cdc[3]])
+                        if num.startswith(cdc[0]):
+                            info.append([cdc[1], cdc[2]])
                             # Проверка на принадлежность к России (Verification of belonging to Russia)
                             if num.startswith('79'):
                                 # Поиск на правильность Российского номера
@@ -55,13 +58,13 @@ def search_by_one_number(num, locale, translate):
                                     # Нахождение оператора и региона сотового номера
                                     # (Finding the operator and the region of the cell number)
                                     for cdm in rusmob:
-                                        if num[1:].startswith(cdm[1]):
+                                        if num[1:].startswith(cdm[0]):
                                             if locale == 'en':
-                                                info.append([f'Operator: {cdm[2]}',
-                                                             f'Region: {cdm[3]}'])
+                                                info.append([f'Operator: {cdm[1]}',
+                                                             f'Region: {cdm[2]}'])
                                             elif locale == 'ru':
-                                                info.append([f'Оператор: {cdm[2]}',
-                                                             f'Регион: {cdm[3]}'])
+                                                info.append([f'Оператор: {cdm[1]}',
+                                                             f'Регион: {cdm[2]}'])
                                             flag = False
                                             break
                                     if flag:
@@ -76,25 +79,13 @@ def search_by_one_number(num, locale, translate):
                                     # Нахождение региона городского номера
                                     # (Finding the region of the city number)
                                     for cdg in rusgor:
-                                        if ',' in cdg[2]:
-                                            for i in cdg[2].split(', '):
-                                                if num[1:].startswith(i):
-                                                    if locale == 'en':
-                                                        info.append(
-                                                            [f'Region: {cdg[1]}'])
-                                                    elif locale == 'ru':
-                                                        info.append(
-                                                            [f'Регион: {cdg[1]}'])
-                                                    flag = False
-                                                    break
-                                        else:
-                                            if num[1:].startswith(cdg[2]):
-                                                if locale == 'en':
-                                                    info.append([f'Region: {cdg[1]}'])
-                                                elif locale == 'ru':
-                                                    info.append([f'Регион: {cdg[1]}'])
-                                                flag = False
-                                                break
+                                        if num[1:].startswith(cdg[0]):
+                                            if locale == 'en':
+                                                info.append([f'Region: {cdg[1]}'])
+                                            elif locale == 'ru':
+                                                info.append([f'Регион: {cdg[1]}'])
+                                            flag = False
+                                            break
                                     if flag:
                                         if locale == 'en':
                                             info.append(['Region: Unknown'])
@@ -104,12 +95,12 @@ def search_by_one_number(num, locale, translate):
                                     info = []
             # Поиск доп. информации о номере (Search for additional information about the room)
             for i in pstscrptm:
-                if i[1] == num:
+                if i[0] == num:
                     if translate:
-                        translation = Translator().translate(f'{i[2]}', dest=locale)
+                        translation = Translator().translate(f'{i[1]}', dest=locale)
                         info.append([f'P.s. {translation.text}'])
                     else:
-                        info.append([f'P.s. {i[2]}'])
+                        info.append([f'P.s. {i[1]}'])
             # Проверка на нахождение информации (Checking for finding information)
             if not info:
                 con.close()
@@ -157,13 +148,16 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
         # (Reading from the document and converting to the correct number)
         con = sqlite3.connect('data/checkbd.db')
         cur = con.cursor()
-        cur.execute(f"""SELECT * FROM countries_{locale}""")
+        cur.execute(f"""SELECT code, country_{locale}, timezone FROM countries""")
         bdcountry = cur.fetchall()
-        cur.execute(f"""SELECT * FROM rusnummob_{locale}""")
+        cur.execute(f"""SELECT code, operator_{locale}, region_{locale} FROM rusnummob 
+                        JOIN operators ON operators.id = rusnummob.operator
+                        JOIN regions ON regions.id = rusnummob.region""")
         rusmob = cur.fetchall()
-        cur.execute(f"""SELECT * FROM rusnumgor_{locale}""")
+        cur.execute(f"""SELECT code, region_{locale} FROM rusnumgor 
+                        JOIN regions ON regions.id = rusnumgor.region""")
         rusgor = cur.fetchall()
-        cur.execute(f"""SELECT * FROM Postscriptum""")
+        cur.execute(f"""SELECT nmb, info FROM postscriptum""")
         pstscrptm = cur.fetchall()
         # Информирование: был ли варнинг (Informing: was there a warning)
         wrng = False
@@ -185,10 +179,10 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
                     if 15 > len(num) > 8:
                         # Поиск по стране (Search by country)
                         for cdc in bdcountry:
-                            if ',' in cdc[2]:
-                                for i in cdc[2].split(', '):
+                            if ',' in cdc[0]:
+                                for i in cdc[0].split(', '):
                                     if num.startswith(i):
-                                        info.append([cdc[1], cdc[3]])
+                                        info.append([cdc[1], cdc[2]])
                                         break
                             else:
                                 if num.startswith(cdc[2]):
@@ -200,13 +194,13 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
                                         # (Checking for the correctness of the Russian number)
                                         if len(num) == 11:
                                             for cdm in rusmob:
-                                                if num[1:].startswith(cdm[1]):
+                                                if num[1:].startswith(cdm[0]):
                                                     if locale == 'en':
-                                                        info.append([f'Operator: {cdm[2]}',
-                                                                     f'Region: {cdm[3]}'])
+                                                        info.append([f'Operator: {cdm[1]}',
+                                                                     f'Region: {cdm[2]}'])
                                                     elif locale == 'ru':
-                                                        info.append([f'Оператор: {cdm[2]}',
-                                                                     f'Регион: {cdm[3]}'])
+                                                        info.append([f'Оператор: {cdm[1]}',
+                                                                     f'Регион: {cdm[2]}'])
                                                     flag = False
                                                     break
                                             if flag:
@@ -220,25 +214,13 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
                                     elif num.startswith('7'):
                                         if len(num) == 11:
                                             for cdg in rusgor:
-                                                if ',' in cdg[2]:
-                                                    for i in cdg[2].split(', '):
-                                                        if num[1:].startswith(i):
-                                                            if locale == 'en':
-                                                                info.append(
-                                                                    [f'Region: {cdg[1]}'])
-                                                            elif locale == 'ru':
-                                                                info.append(
-                                                                    [f'Регион: {cdg[1]}'])
-                                                            flag = False
-                                                            break
-                                                else:
-                                                    if num[1:].startswith(cdg[2]):
-                                                        if locale == 'en':
-                                                            info.append([f'Region: {cdg[1]}'])
-                                                        elif locale == 'ru':
-                                                            info.append([f'Регион: {cdg[1]}'])
-                                                        flag = False
-                                                        break
+                                                if num[1:].startswith(cdg[0]):
+                                                    if locale == 'en':
+                                                        info.append([f'Region: {cdg[1]}'])
+                                                    elif locale == 'ru':
+                                                        info.append([f'Регион: {cdg[1]}'])
+                                                    flag = False
+                                                    break
                                             if flag:
                                                 if locale == 'en':
                                                     info.append(['Region: Unknown'])
@@ -248,12 +230,12 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
                                             info = []
                     # Поиск доп. информации (Search for additional information)
                     for i in pstscrptm:
-                        if i[1] == num:
+                        if i[0] == num:
                             if translate:
-                                translation = Translator().translate(f'{i[2]}', dest=locale)
+                                translation = Translator().translate(f'{i[1]}', dest=locale)
                                 info.append([f'P.s. {translation.text}'])
                             else:
-                                info.append([f'P.s. {i[2]}'])
+                                info.append([f'P.s. {i[1]}'])
                     # Проверка на наличие информации (Checking for information)
                     if not info:
                         if locale == 'en':
@@ -310,7 +292,7 @@ def add_contact(num, information):
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
         cur = con.cursor()
-        know = cur.execute(f"""SELECT nmb FROM Postscriptum""").fetchall()
+        know = cur.execute(f"""SELECT nmb FROM postscriptum""").fetchall()
         # Проверка на нахождение номера уже в базе данных
         # (Checking if the number is already in the database)
         hv = False
@@ -323,7 +305,7 @@ def add_contact(num, information):
             # Запись информации если номера нет в базе данных
             # (Recording information if the number is not in the database)
             if information:
-                cur.execute('INSERT INTO Postscriptum(nmb, Info) VALUES (?,?)', [num, information])
+                cur.execute('INSERT INTO postscriptum(nmb, info) VALUES (?,?)', [num, information])
                 con.commit()
             else:
                 raise InfoError
@@ -361,7 +343,7 @@ def edit_contact(num, information):
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
         cur = con.cursor()
-        know = cur.execute(f"""SELECT nmb FROM Postscriptum""").fetchall()
+        know = cur.execute(f"""SELECT nmb FROM postscriptum""").fetchall()
         # Проверка на нахождение номера уже в базе данных
         # (Checking if the number is already in the database)
         hv = False
@@ -372,8 +354,8 @@ def edit_contact(num, information):
             if information:
                 # Обновление информации если номер уже есть в базе данных
                 # (Updating information if the number is already in the database)
-                cur.execute("""UPDATE Postscriptum
-                                    SET Info = (?) 
+                cur.execute("""UPDATE postscriptum
+                                    SET info = (?) 
                                         WHERE nmb = (?)""", [information, num])
                 con.commit()
             else:
@@ -414,7 +396,7 @@ def delete_contact(num):
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
         cur = con.cursor()
-        know = cur.execute(f"""SELECT nmb FROM Postscriptum""").fetchall()
+        know = cur.execute(f"""SELECT nmb FROM postscriptum""").fetchall()
         # Проверка на нахождение номера уже в базе данных
         # (Checking if the number is already in the database)
         hv = False
@@ -424,7 +406,7 @@ def delete_contact(num):
         if hv:
             # Удаление информации если номер есть в базе данных
             # (Deleting information if the number is in the database)
-            cur.execute("""DELETE FROM Postscriptum
+            cur.execute("""DELETE FROM postscriptum
                                     WHERE nmb = (?)""", [num])
             con.commit()
         else:
@@ -460,13 +442,16 @@ def my_contact(text, locale, translate):
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
         cur = con.cursor()
-        cur.execute(f"""SELECT * FROM countries_{locale}""")
+        cur.execute(f"""SELECT code, country_{locale}, timezone FROM countries""")
         bdcountry = cur.fetchall()
-        cur.execute(f"""SELECT * FROM rusnummob_{locale}""")
+        cur.execute(f"""SELECT code, operator_{locale}, region_{locale} FROM rusnummob 
+                        JOIN operators ON operators.id = rusnummob.operator
+                        JOIN regions ON regions.id = rusnummob.region""")
         rusmob = cur.fetchall()
-        cur.execute(f"""SELECT * FROM rusnumgor_{locale}""")
+        cur.execute(f"""SELECT code, region_{locale} FROM rusnumgor 
+                        JOIN regions ON regions.id = rusnumgor.region""")
         rusgor = cur.fetchall()
-        cur.execute(f"""SELECT * FROM Postscriptum""")
+        cur.execute(f"""SELECT * FROM postscriptum""")
         pstscrptm = cur.fetchall()
         rows = []
         for row in pstscrptm:
@@ -487,14 +472,14 @@ def my_contact(text, locale, translate):
             if 15 > len(num) > 8:
                 # Поиск по стране (Search by country)
                 for cdc in bdcountry:
-                    if ',' in cdc[2]:
-                        for i in cdc[2].split(', '):
+                    if ',' in cdc[0]:
+                        for i in cdc[0].split(', '):
                             if num.startswith(i):
-                                info.append([cdc[1], cdc[3]])
+                                info.append([cdc[1], cdc[2]])
                                 break
                     else:
-                        if num.startswith(cdc[2]):
-                            info.append([cdc[1], cdc[3]])
+                        if num.startswith(cdc[0]):
+                            info.append([cdc[1], cdc[2]])
                             # Проверка на принадлежность к России (Verification of belonging to Russia)
                             if num.startswith('79'):
                                 # Поиск на правильность Российского номера
@@ -503,13 +488,13 @@ def my_contact(text, locale, translate):
                                     # Нахождение оператора и региона сотового номера
                                     # (Finding the operator and the region of the cell number)
                                     for cdm in rusmob:
-                                        if num[1:].startswith(cdm[1]):
+                                        if num[1:].startswith(cdm[0]):
                                             if locale == 'en':
-                                                info.append([f'Operator: {cdm[2]}',
-                                                             f'Region: {cdm[3]}'])
+                                                info.append([f'Operator: {cdm[1]}',
+                                                             f'Region: {cdm[2]}'])
                                             elif locale == 'ru':
-                                                info.append([f'Оператор: {cdm[2]}',
-                                                             f'Регион: {cdm[3]}'])
+                                                info.append([f'Оператор: {cdm[1]}',
+                                                             f'Регион: {cdm[2]}'])
                                             flag = False
                                             break
                                     if flag:
@@ -524,25 +509,13 @@ def my_contact(text, locale, translate):
                                     # Нахождение региона городского номера
                                     # (Finding the region of the city number)
                                     for cdg in rusgor:
-                                        if ',' in cdg[2]:
-                                            for i in cdg[2].split(', '):
-                                                if num[1:].startswith(i):
-                                                    if locale == 'en':
-                                                        info.append(
-                                                            [f'Region: {cdg[1]}'])
-                                                    elif locale == 'ru':
-                                                        info.append(
-                                                            [f'Регион: {cdg[1]}'])
-                                                    flag = False
-                                                    break
-                                        else:
-                                            if num[1:].startswith(cdg[2]):
-                                                if locale == 'en':
-                                                    info.append([f'Region: {cdg[1]}'])
-                                                elif locale == 'ru':
-                                                    info.append([f'Регион: {cdg[1]}'])
-                                                flag = False
-                                                break
+                                        if num[1:].startswith(cdg[0]):
+                                            if locale == 'en':
+                                                info.append([f'Region: {cdg[1]}'])
+                                            elif locale == 'ru':
+                                                info.append([f'Регион: {cdg[1]}'])
+                                            flag = False
+                                            break
                                     if flag:
                                         if locale == 'en':
                                             info.append(['Region: Unknown'])
