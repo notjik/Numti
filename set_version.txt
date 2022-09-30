@@ -1,7 +1,7 @@
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(1, 0, 4, 0),
-    prodvers=(1, 0, 4, 0),
+    filevers=(1, 0, 6, 0),
+    prodvers=(1, 0, 6, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -16,11 +16,11 @@ VSVersionInfo(
         u'040904b0',
         [StringStruct(u'CompanyName', u'notjik'),
         StringStruct(u'FileDescription', u'Numti'),
-        StringStruct(u'FileVersion', u'1.0.4'),
+        StringStruct(u'FileVersion', u'1.0.6'),
         StringStruct(u'InternalName', u'numti-process'),
         StringStruct(u'OriginalFilename', u'Numti.exe'),
         StringStruct(u'ProductName', u'Numti'),
-        StringStruct(u'ProductVersion', u'1.0.4')])
+        StringStruct(u'ProductVersion', u'1.0.6з')])
       ]),
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]
