@@ -1,4 +1,4 @@
-Numti v1.0.5
+Numti v1.0.7
 
 <center><h1>Hello, my friend!</h1></center>
 <h3>With this program, you can use contact recording not only on your phone, but also on your PC.</h3>
