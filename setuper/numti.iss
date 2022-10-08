@@ -6,8 +6,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{66993707-B504-4F58-8C1D-F811F02B45BE}
 AppName=Numti
-AppVersion=1.0.5
-AppVerName=Numti 1.0.5
+AppVersion=1.0.7
+AppVerName=Numti 1.0.7
 AppPublisher=notjik
 AppPublisherURL=https://github.com/notjik
 AppSupportURL=https://github.com/notjik
