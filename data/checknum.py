@@ -1,12 +1,12 @@
-# Импортирование библиотек (Importing libraries)
+"""Импортирование библиотек (Importing libraries)"""
 import sqlite3
 
 from googletrans import Translator
 from httpcore._exceptions import ConnectTimeout, CloseError, ConnectError
 
 
-# Выполнение поиска по одному номеру (Performing a search by one number)
 def search_by_one_number(num, locale, translate):
+    """Выполнение поиска по одному номеру (Performing a search by one number)"""
     try:
         # Считывание с главной строки (Reading from the main line)
         # Удаление лишних символов и проверка на корректность
@@ -128,9 +128,8 @@ def search_by_one_number(num, locale, translate):
         return 522
 
 
-# Выполнение поиска из текстового документа (Performing a search from a text document)
 def search_from_a_text_document(readdoc, writedoc, locale, translate):
-    # Настройка поиска из документа (Setting up a search from a document)
+    '''Настройка поиска из текстового документа (Setting up a search from a text document)'''
     try:
         # Считывание из документа и преобразование в корректный номер
         # (Reading from the document and converting to the correct number)
@@ -274,8 +273,8 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
         return 522
 
 
-# Выполнение записи в контактную книгу (Making an entry in the contact book)
 def add_contact(num, information):
+    """Выполнение записи в контактную книгу (Making an entry in the contact book)"""
     try:
         # Считывание и обработка данных (Data reading and processing)
         num = num.replace('-', '').replace(' ', '').strip()
@@ -325,8 +324,8 @@ def add_contact(num, information):
         return 522
 
 
-# Выполнение редактирования контактной книги (Performing Contact Book editing)
 def edit_contact(num, information):
+    """Выполнение редактирования контактной книги (Performing Contact Book editing)"""
     try:
         # Считывание и обработка данных (Data reading and processing)
         num = num.replace('-', '').replace(' ', '').strip()
@@ -378,8 +377,8 @@ def edit_contact(num, information):
         return 522
 
 
-# Выполнение удаления из книги контактов (Performing deletion from the contact book)
 def delete_contact(num):
+    """Выполнение удаления из книги контактов (Performing deletion from the contact book)"""
     try:
         # Считывание и обработка данных (Data reading and processing)
         num = num.replace('-', '').replace(' ', '').strip()
@@ -425,8 +424,8 @@ def delete_contact(num):
         return 522
 
 
-# Выполнение поиска внутри книги контактов (Performing a search inside the contact book)
 def my_contact(text, locale, translate):
+    """Выполнение поиска внутри книги контактов (Performing a search inside the contact book)"""
     try:
         # Считывание с главной строки (Reading from the main line)
         # Удаление лишних символов и проверка на корректность
@@ -549,7 +548,9 @@ def my_contact(text, locale, translate):
         return 522
 
 
-# Инициализация ошибок (Error Initialization)
+"""Инициализация ошибок (Error Initialization)"""
+
+
 class NumError(Exception):
     pass
 
@@ -566,6 +567,6 @@ class NoNumError(Exception):
     pass
 
 
-# Точка входа теста (Test entry point)
+"""Точка входа теста (Test entry point)"""
 if __name__ == '__main__':
     print(my_contact('em', 'ru', True))

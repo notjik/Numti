@@ -1,4 +1,4 @@
-# Импортирование библиотек (Importing libraries)
+"""Импортирование библиотек (Importing libraries)"""
 import sys
 import json
 
@@ -9,10 +9,11 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem
 
 
-# Создание главного окна (Creating the main window)
 class Window(QMainWindow, design.Ui_MainWindow):
-    # Инициализирование дизайна (Design Initialization)
+    """Создание главного окна (Creating the main window)"""
+
     def __init__(self):
+        """Инициализирование дизайна (Design Initialization)"""
         super(Window, self).__init__()
         # uic.loadUi("dsgn/design.ui", self)
         self.setupUi(self)
@@ -45,14 +46,41 @@ class Window(QMainWindow, design.Ui_MainWindow):
         self.lineEdit.textChanged.connect(self.edit_text)
         self.namedoc = ''
 
-    # Перезапуск интерфейса (Restarting the interface)
+    def mousePressEvent(self, event):
+        """Передвижение экрана во время зажатия (Screen movement during pinching)"""
+        if event.button() == QtCore.Qt.LeftButton:
+            x_main = self.geometry().x()
+            y_main = self.geometry().y()
+            cursor_x = QtGui.QCursor.pos().x()
+            cursor_y = QtGui.QCursor.pos().y()
+            if x_main <= cursor_x <= x_main + self.geometry().width():
+                if y_main <= cursor_y <= y_main + self.header.geometry().height():
+                    self.old_pos = event.pos()
+                else:
+                    self.old_pos = None
+        elif event.button() == QtCore.Qt.RightButton:
+            self.old_pos = None
+
+    def mouseReleaseEvent(self, event):
+        """Поведение при отпускании мыши (Behavior when releasing the mouse)"""
+        if event.button() == QtCore.Qt.LeftButton:
+            self.old_pos = None
+
+    def mouseMoveEvent(self, event):
+        """Оценка передвижения мыши (Evaluation of mouse movement)"""
+        if not self.old_pos:
+            return
+        delta = event.pos() - self.old_pos
+        self.move(self.pos() + delta)
+
     def restart(self):
+        """Перезапуск интерфейса (Restarting the interface)"""
         self.hide()
         self.__init__()
         self.show()
 
-    # Активация поиска контактов в записной книге (Activating contact search in the notebook)
     def edit_text(self):
+        """Активация поиска контактов в записной книге (Activating contact search in the notebook)"""
         if self.comboBox.currentIndex() == 0:
             check = checknum.my_contact(self.lineEdit.text(), self.config['language'], self.config['translating'])
             if check and check != 499 and check != 520:
@@ -88,29 +116,31 @@ class Window(QMainWindow, design.Ui_MainWindow):
             else:
                 self.tableWidget.setRowCount(0)
 
-    # Настройка динамики менюбара (Setting up the menubar dynamics)
     def changemenubar(self):
+        """Настройка динамики менюбара (Setting up the menubar dynamics)"""
         if self.menubar.height():
             self.menubar.hide()
             self.setMinimumSize(QtCore.QSize(800, 590))
             self.setMaximumSize(QtCore.QSize(800, 590))
             self.seemenu.setIcon(self.icon1)
+            self.header.setGeometry(QtCore.QRect(0, 0, 800, 30))
         else:
             self.menubar.show()
             self.setMinimumSize(QtCore.QSize(800, 610))
             self.setMaximumSize(QtCore.QSize(800, 610))
             self.seemenu.setIcon(self.icon11)
+            self.header.setGeometry(QtCore.QRect(0, 0, 800, 60))
 
-    # Обработчик настроек (Settings Handler)
     def settings(self):
+        """Обработчик настроек (Settings Handler)"""
         self.Light.triggered.connect(self.light)
         self.Dark.triggered.connect(self.dark)
         self.Russian.triggered.connect(self.russian)
         self.English.triggered.connect(self.english)
         self.Translating.triggered.connect(self.translate)
 
-    # Включение/выключение перевода контактов (Enabling/disabling contact translation)
     def translate(self):
+        """Включение/выключение перевода контактов (Enabling/disabling contact translation)"""
         if self.Translating.isChecked():
             self.Translating.setChecked(True)
             self.config['translating'] = True
@@ -121,8 +151,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
             json.dump(self.config, file)
         self.restart()
 
-    # Настройка темы: Светлая (Theme Setting: Light)
     def light(self):
+        """Настройка темы: Светлая (Theme Setting: Light)"""
         self.Light.setChecked(True)
         self.Dark.setChecked(False)
         self.config['theme'] = 'light'
@@ -130,8 +160,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
             json.dump(self.config, file)
         self.restart()
 
-    # Настройка темы: Тёмная (Theme Setting: Dark)
     def dark(self):
+        """Настройка темы: Тёмная (Theme Setting: Dark)"""
         self.Dark.setChecked(True)
         self.Light.setChecked(False)
         self.config['theme'] = 'dark'
@@ -139,8 +169,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
             json.dump(self.config, file)
         self.restart()
 
-    # Настройка языка: Русский (Localization settings: Russian)
     def russian(self):
+        """Настройка языка: Русский (Localization settings: Russian)"""
         self.Russian.setChecked(True)
         self.English.setChecked(False)
         self.config['language'] = 'ru'
@@ -148,8 +178,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
             json.dump(self.config, file)
         self.restart()
 
-    # Настройка языка: Английский (Localization Settings: English)
     def english(self):
+        """Настройка языка: Английский (Localization Settings: English)"""
         self.English.setChecked(True)
         self.Russian.setChecked(False)
         self.config['language'] = 'en'
@@ -157,8 +187,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
             json.dump(self.config, file)
         self.restart()
 
-    # Настройка изменения комбобокса (Configuring the combo box change)
     def change(self):
+        """Настройка изменения комбобокса (Configuring the combo box change)"""
         if self.English.isChecked():
             if self.comboBox.currentIndex() == 0:
                 self.pushButton.setText('Autosearch')
@@ -325,8 +355,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
                 self.plainTextEdit.hide()
                 self.setWindowTitle(self.comboBox.currentText())
 
-    # Настройка выбора файла (Configuring File Selection)
     def changedoc(self):
+        """Настройка выбора файла (Configuring File Selection)"""
         if self.English.isChecked():
             self.namedoc = QFileDialog.getOpenFileName(self, 'Select a document', '/', 'Text document (*.txt)')[0]
             self.label.setText(self.namedoc)
@@ -335,8 +365,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
                                                        'Текстовый документ (*.txt)')[0]
             self.label.setText(self.namedoc)
 
-    # Настройка вывода информации о программе (Setting up the output of information about the program)
     def aboutprogramm(self):
+        """Настройка вывода информации о программе (Setting up the output of information about the program)"""
         if self.English.isChecked():
             QMessageBox.about(self, 'About program',
                               'The program uses a database with information that is freely available on the '
@@ -354,10 +384,10 @@ class Window(QMainWindow, design.Ui_MainWindow):
                               'Информация о выбранном документе для обработки '
                               'содержится в главном окне. Мы не несём ответственность за утерю данных во время '
                               'использования режима текстового документа. \n \n В случае ошибки при выполнении '
-                              'приграммы вы будете оповещены.')
+                              'программы вы будете оповещены.')
 
-    # Настройка вывода помощи использования программы (Configuring the output by using the program)
     def howtousetheprogram(self):
+        """Настройка вывода помощи использования программы (Configuring the output by using the program)"""
         if self.English.isChecked():
             QMessageBox.about(self, 'How to use the program?',
                               '1. Select the operating mode. \n'
@@ -413,8 +443,10 @@ class Window(QMainWindow, design.Ui_MainWindow):
                               '6 / г. Вы будете уведомлены о завершении операции. \n'
                               '7 / г. Вся информация хранится в текстовом документе,  который вы ввели. \n \n')
 
-    # Главное действие, поиск или запись доп. информации (Main action, search or recording of additional information)
     def run(self):
+        """
+        Главное действие, поиск или запись доп. информации (Main action, search or recording of additional information)
+        """
         # Настройка поиска по одному номеру (Setting up a search by one number)
         if self.comboBox.currentIndex() == 2:
             check = checknum.search_by_one_number(self.lineEdit.text(), self.config['language'],
@@ -556,8 +588,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
                 elif self.Russian.isChecked():
                     QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
 
-    # Настройка добавления контакта (Setting up adding a contact)
     def addcontact(self):
+        """Настройка добавления контакта (Setting up adding a contact)"""
         check = checknum.add_contact(self.lineEdit.text(), self.plainTextEdit.toPlainText())
         if not check:
             if self.English.isChecked():
@@ -591,8 +623,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
             elif self.Russian.isChecked():
                 QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
 
-    # Настройка изменения контакта (Setting up a contact change)
     def editcontact(self):
+        """Настройка изменения контакта (Setting up a contact change)"""
         check = checknum.edit_contact(self.lineEdit.text(), self.plainTextEdit.toPlainText())
         if not check:
             if self.English.isChecked():
@@ -626,8 +658,8 @@ class Window(QMainWindow, design.Ui_MainWindow):
             elif self.Russian.isChecked():
                 QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
 
-    # Настройка удаления контакта (Setting up Contact Deletion)
     def deletecontact(self):
+        """Настройка удаления контакта (Setting up Contact Deletion)"""
         check = checknum.delete_contact(self.lineEdit.text())
         if not check:
             if self.English.isChecked():
@@ -657,7 +689,9 @@ class Window(QMainWindow, design.Ui_MainWindow):
                 QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
 
 
-# Инициализация ошибок (Error Initialization)
+"""Инициализация ошибок (Error Initialization)"""
+
+
 class NumError(Exception):
     pass
 
@@ -674,12 +708,12 @@ class NoNumError(Exception):
     pass
 
 
-# Перевод C'шных ошибов в Python'овские (Translating C errors to Python)
 def except_hook(cls, exception, traceback):
+    """Перевод C'шных ошибок в Python'овские (Translating C errors to Python)"""
     sys.__excepthook__(cls, exception, traceback)
 
 
-# Точка входа (Entry point)
+"""Точка входа (Entry point)"""
 if __name__ == '__main__':
     sys.argv[0] = 'Numti'
     app = QApplication(sys.argv)
