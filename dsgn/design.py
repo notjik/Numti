@@ -15,15 +15,16 @@
 # P.s And I know)
 
 
-# Импортирование библиотек (Importing libraries)
+"""Импортирование библиотек (Importing libraries)"""
 import json
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-# Создание класса дизайна главного окна (Creating a Main window design class)
 class Ui_MainWindow(object):
-    # Настройка пользовательского интерфейса (Customizing the User interface)
+    """Создание класса дизайна главного окна (Creating a Main window design class)"""
+
     def setupUi(self, MainWindow):
+        """Настройка пользовательского интерфейса (Customizing the User interface)"""
         with open("data/numti.cfg", "r") as file:
             self.config = json.load(file)
         MainWindow.setObjectName("MainWindow")
@@ -47,6 +48,9 @@ class Ui_MainWindow(object):
             MainWindow.setMinimumSize(QtCore.QSize(800, 590))
             MainWindow.setMaximumSize(QtCore.QSize(800, 590))
             MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+            self.header = QtWidgets.QWidget(self.centralwidget)
+            self.header.setGeometry(QtCore.QRect(0, 0, 800, 30))
+            self.header.setObjectName("header")
             self.horizontalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
             self.horizontalLayoutWidget.setGeometry(QtCore.QRect(680, 0, 111, 26))
             self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
@@ -441,8 +445,8 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    # Настройка локализации (Localization Settings)
     def retranslateUi(self, MainWindow):
+        """Настройка локализации (Localization Settings)"""
         if self.config['language'] == 'ru':
             _translate = QtCore.QCoreApplication.translate
             # MainWindow.setWindowTitle(_translate("MainWindow", f"Numti v{self.config['version']}"))
@@ -518,6 +522,7 @@ class Ui_MainWindow(object):
 # Точка входа теста (Test entry point)
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
