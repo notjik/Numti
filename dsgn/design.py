@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
             MainWindow.setMaximumSize(QtCore.QSize(800, 590))
             MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
             self.header = QtWidgets.QWidget(self.centralwidget)
-            self.header.setGeometry(QtCore.QRect(0, 0, 800, 30))
+            self.header.setGeometry(QtCore.QRect(0, 0, 800, 27))
             self.header.setObjectName("header")
             self.horizontalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
             self.horizontalLayoutWidget.setGeometry(QtCore.QRect(680, 0, 111, 26))
@@ -89,6 +89,9 @@ class Ui_MainWindow(object):
             MainWindow.setMinimumSize(QtCore.QSize(800, 610))
             MainWindow.setMaximumSize(QtCore.QSize(800, 610))
             MainWindow.setCentralWidget(self.centralwidget)
+            self.header = QtWidgets.QWidget(self.centralwidget)
+            self.header.setGeometry(QtCore.QRect(0, 0, 0, 0))
+            self.header.setObjectName("header")
         self.verticalWidget = QtWidgets.QWidget(self.centralwidget)
         self.verticalWidget.setGeometry(QtCore.QRect(9, 29, 391, 41))
         self.verticalWidget.setObjectName("verticalWidget")
@@ -519,7 +522,7 @@ class Ui_MainWindow(object):
             self.Dark.setText(_translate("MainWindow", "Dark theme"))
 
 
-# Точка входа теста (Test entry point)
+"""Точка входа теста (Test entry point)"""
 if __name__ == "__main__":
     import sys
 
