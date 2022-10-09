@@ -314,7 +314,7 @@ class Ui_MainWindow(object):
             self.centralwidget.setStyleSheet("background-color: #1F1E25; color: #FFFFFF")
             self.verticalWidget.setStyleSheet("background-color: #26252a; border-style: solid; border-radius: 5;")
             self.comboBox.setStyleSheet(
-                """background-color: #C9C8D4; border-style: solid; border-radius: 5; color: #373737;""")
+                "background-color: #C9C8D4; border-style: solid; border-radius: 5; color: #373737")
             self.horizontalWidget.setStyleSheet("background-color: #26252a; border-style: solid; border-radius: 5;")
             self.label.setStyleSheet("background-color: #C9C8D4; border-style: solid; border-radius: 5; color: #373737")
             self.toolButton.setStyleSheet(

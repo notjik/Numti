@@ -689,25 +689,6 @@ class Window(QMainWindow, design.Ui_MainWindow):
                 QMessageBox.critical(self, "Предупреждение!", "Критическая ошибка.", QMessageBox.Ok)
 
 
-"""Инициализация ошибок (Error Initialization)"""
-
-
-class NumError(Exception):
-    pass
-
-
-class InfoError(Exception):
-    pass
-
-
-class FullError(Exception):
-    pass
-
-
-class NoNumError(Exception):
-    pass
-
-
 def except_hook(cls, exception, traceback):
     """Перевод C'шных ошибок в Python'овские (Translating C errors to Python)"""
     sys.__excepthook__(cls, exception, traceback)
