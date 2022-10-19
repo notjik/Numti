@@ -42,57 +42,51 @@ def search_by_one_number(num, locale, translate):
             if 15 > len(num) > 8:
                 # Поиск по стране (Search by country)
                 for cdc in bdcountry:
-                    if ',' in cdc[0]:
-                        for i in cdc[0].split(', '):
-                            if num.startswith(i):
-                                info.append([cdc[1], cdc[2]])
-                                break
-                    else:
-                        if num.startswith(cdc[0]):
-                            info.append([cdc[1], cdc[2]])
-                            # Проверка на принадлежность к России (Verification of belonging to Russia)
-                            if num.startswith('79'):
-                                # Поиск на правильность Российского номера
-                                # (Search for the correctness of the Russian number)
-                                if len(num) == 11:
-                                    # Нахождение оператора и региона сотового номера
-                                    # (Finding the operator and the region of the cell number)
-                                    for cdm in rusmob:
-                                        if num[1:].startswith(cdm[0]):
-                                            if locale == 'en':
-                                                info.append([f'Operator: {cdm[1]}',
-                                                             f'Region: {cdm[2]}'])
-                                            elif locale == 'ru':
-                                                info.append([f'Оператор: {cdm[1]}',
-                                                             f'Регион: {cdm[2]}'])
-                                            flag = False
-                                            break
-                                    if flag:
+                    if num.startswith(cdc[0]):
+                        info.append([cdc[1], cdc[2]])
+                        # Проверка на принадлежность к России (Verification of belonging to Russia)
+                        if num.startswith('79'):
+                            # Поиск на правильность Российского номера
+                            # (Search for the correctness of the Russian number)
+                            if len(num) == 11:
+                                # Нахождение оператора и региона сотового номера
+                                # (Finding the operator and the region of the cell number)
+                                for cdm in rusmob:
+                                    if num[1:].startswith(cdm[0]):
                                         if locale == 'en':
-                                            info.append(['Operator: Unknown', 'Region: Unknown'])
+                                            info.append([f'Operator: {cdm[1]}',
+                                                         f'Region: {cdm[2]}'])
                                         elif locale == 'ru':
-                                            info.append(['Оператор: Неизвестно', 'Регион: Неизвестно'])
-                                else:
-                                    info = []
-                            elif num.startswith('7'):
-                                if len(num) == 11:
-                                    # Нахождение региона городского номера
-                                    # (Finding the region of the city number)
-                                    for cdg in rusgor:
-                                        if num[1:].startswith(cdg[0]):
-                                            if locale == 'en':
-                                                info.append([f'Region: {cdg[1]}'])
-                                            elif locale == 'ru':
-                                                info.append([f'Регион: {cdg[1]}'])
-                                            flag = False
-                                            break
-                                    if flag:
+                                            info.append([f'Оператор: {cdm[1]}',
+                                                         f'Регион: {cdm[2]}'])
+                                        flag = False
+                                        break
+                                if flag:
+                                    if locale == 'en':
+                                        info.append(['Operator: Unknown', 'Region: Unknown'])
+                                    elif locale == 'ru':
+                                        info.append(['Оператор: Неизвестно', 'Регион: Неизвестно'])
+                            else:
+                                info = []
+                        elif num.startswith('7'):
+                            if len(num) == 11:
+                                # Нахождение региона городского номера
+                                # (Finding the region of the city number)
+                                for cdg in rusgor:
+                                    if num[1:].startswith(cdg[0]):
                                         if locale == 'en':
-                                            info.append(['Region: Unknown'])
+                                            info.append([f'Region: {cdg[1]}'])
                                         elif locale == 'ru':
-                                            info.append(['Регион: Неизвестно'])
-                                else:
-                                    info = []
+                                            info.append([f'Регион: {cdg[1]}'])
+                                        flag = False
+                                        break
+                                if flag:
+                                    if locale == 'en':
+                                        info.append(['Region: Unknown'])
+                                    elif locale == 'ru':
+                                        info.append(['Регион: Неизвестно'])
+                            else:
+                                info = []
             # Поиск доп. информации о номере (Search for additional information about the room)
             for i in pstscrptm:
                 if i[0] == num:
@@ -178,55 +172,49 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
                     if 15 > len(num) > 8:
                         # Поиск по стране (Search by country)
                         for cdc in bdcountry:
-                            if ',' in cdc[0]:
-                                for i in cdc[0].split(', '):
-                                    if num.startswith(i):
-                                        info.append([cdc[1], cdc[2]])
-                                        break
-                            else:
-                                if num.startswith(cdc[2]):
-                                    info.append([cdc[1], cdc[3]])
-                                    # Проверка на принадлежность к России
-                                    # (Verification of belonging to Russia)
-                                    if num.startswith('79'):
-                                        # Проверка на правильность Российского номера
-                                        # (Checking for the correctness of the Russian number)
-                                        if len(num) == 11:
-                                            for cdm in rusmob:
-                                                if num[1:].startswith(cdm[0]):
-                                                    if locale == 'en':
-                                                        info.append([f'Operator: {cdm[1]}',
-                                                                     f'Region: {cdm[2]}'])
-                                                    elif locale == 'ru':
-                                                        info.append([f'Оператор: {cdm[1]}',
-                                                                     f'Регион: {cdm[2]}'])
-                                                    flag = False
-                                                    break
-                                            if flag:
+                            if num.startswith(cdc[0]):
+                                info.append([cdc[1], cdc[2]])
+                                # Проверка на принадлежность к России
+                                # (Verification of belonging to Russia)
+                                if num.startswith('79'):
+                                    # Проверка на правильность Российского номера
+                                    # (Checking for the correctness of the Russian number)
+                                    if len(num) == 11:
+                                        for cdm in rusmob:
+                                            if num[1:].startswith(cdm[0]):
                                                 if locale == 'en':
-                                                    info.append(['Operator: Unknown', 'Region: Unknown'])
+                                                    info.append([f'Operator: {cdm[1]}',
+                                                                 f'Region: {cdm[2]}'])
                                                 elif locale == 'ru':
-                                                    info.append(
-                                                        ['Оператор: Неизвестно', 'Регион: Неизвестно'])
-                                        else:
-                                            info = []
-                                    elif num.startswith('7'):
-                                        if len(num) == 11:
-                                            for cdg in rusgor:
-                                                if num[1:].startswith(cdg[0]):
-                                                    if locale == 'en':
-                                                        info.append([f'Region: {cdg[1]}'])
-                                                    elif locale == 'ru':
-                                                        info.append([f'Регион: {cdg[1]}'])
-                                                    flag = False
-                                                    break
-                                            if flag:
+                                                    info.append([f'Оператор: {cdm[1]}',
+                                                                 f'Регион: {cdm[2]}'])
+                                                flag = False
+                                                break
+                                        if flag:
+                                            if locale == 'en':
+                                                info.append(['Operator: Unknown', 'Region: Unknown'])
+                                            elif locale == 'ru':
+                                                info.append(
+                                                    ['Оператор: Неизвестно', 'Регион: Неизвестно'])
+                                    else:
+                                        info = []
+                                elif num.startswith('7'):
+                                    if len(num) == 11:
+                                        for cdg in rusgor:
+                                            if num[1:].startswith(cdg[0]):
                                                 if locale == 'en':
-                                                    info.append(['Region: Unknown'])
+                                                    info.append([f'Region: {cdg[1]}'])
                                                 elif locale == 'ru':
-                                                    info.append(['Регион: Неизвестно'])
-                                        else:
-                                            info = []
+                                                    info.append([f'Регион: {cdg[1]}'])
+                                                flag = False
+                                                break
+                                        if flag:
+                                            if locale == 'en':
+                                                info.append(['Region: Unknown'])
+                                            elif locale == 'ru':
+                                                info.append(['Регион: Неизвестно'])
+                                    else:
+                                        info = []
                     # Поиск доп. информации (Search for additional information)
                     for i in pstscrptm:
                         if i[0] == num:
