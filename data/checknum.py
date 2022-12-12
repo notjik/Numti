@@ -1,23 +1,25 @@
 """Импортирование библиотек (Importing libraries)"""
 import sqlite3
+import time
 
 from googletrans import Translator
 from httpcore._exceptions import ConnectTimeout, CloseError, ConnectError
 
 
-def search_by_one_number(num, locale, translate):
+def only_num(s: str) -> str:
+    return ''.join([i for i in s if i.isdigit()])
+
+
+def search_by_one_number(text: str, locale: str, translate: bool) -> (int, str):
     """Выполнение поиска по одному номеру (Performing a search by one number)"""
     try:
         # Считывание с главной строки (Reading from the main line)
-        # Удаление лишних символов и проверка на корректность
-        # (Removing extra characters and checking for correctness)
-        num = num.replace('-', '').replace(' ', '').strip()
+        # Проверка на правильность номера (Checking for the correctness of the number)
+        num = only_num(text)
         if not num:
-            raise NumError
-        if num[0] == '8' and len(num) == 11:
+            raise NoNumError
+        if num[0] == '8' and len(num) == 11 and text.strip()[0] != '+':
             num = f"7{num[1:]}"
-        else:
-            num = num.lstrip('+')
         # Работа с базами данных, считывание нужных параметров и запись их в переменную
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
@@ -113,7 +115,7 @@ def search_by_one_number(num, locale, translate):
             con.close()
             return 400
     # Действия исключений (Exception Actions)
-    except NumError:
+    except NoNumError:
         return 406
     except ConnectError or ConnectTimeout or CloseError:
         return 499
@@ -122,21 +124,21 @@ def search_by_one_number(num, locale, translate):
         return 522
 
 
-def search_from_a_text_document(readdoc, writedoc, locale, translate):
-    '''Настройка поиска из текстового документа (Setting up a search from a text document)'''
+def search_from_a_text_document(readdoc: str, writedoc: str, locale: str, translate: bool) -> int:
+    """Настройка поиска из текстового документа (Setting up a search from a text document)"""
     try:
         # Считывание из документа и преобразование в корректный номер
         # (Reading from the document and converting to the correct number)
         with open(f'{readdoc}', encoding='utf-8') as f:
             text = []
             for i in f.readlines():
-                i = i.replace('-', '').replace(' ', '').strip()
-                if i == '':
+                num = only_num(i)
+                if not num:
                     continue
-                if i[0] == '8' and len(i) == 11:
-                    text.append(f"7{i[1:]}")
+                if num[0] == '8' and len(num) == 11 and i.strip()[0] == '+':
+                    text.append(f"7{num[1:]}")
                 else:
-                    text.append(i.lstrip('+'))
+                    text.append(num.lstrip('+'))
         # Работа с базами данных, считывание нужных параметров и запись их в переменную
         # (Reading from the document and converting to the correct number)
         con = sqlite3.connect('data/checkbd.db')
@@ -261,20 +263,16 @@ def search_from_a_text_document(readdoc, writedoc, locale, translate):
         return 522
 
 
-def add_contact(num, information):
+def add_contact(text: str, information: str) -> int:
     """Выполнение записи в контактную книгу (Making an entry in the contact book)"""
     try:
         # Считывание и обработка данных (Data reading and processing)
-        num = num.replace('-', '').replace(' ', '').strip()
         # Проверка на правильность номера (Checking for the correctness of the number)
+        num = only_num(text)
         if not num:
             raise NoNumError
-        if num[0] == '8' and len(num) == 11:
+        if num[0] == '8' and len(num) == 11 and text.strip()[0] != '+':
             num = f"7{num[1:]}"
-        else:
-            num = num.lstrip('+')
-        if not num.isdigit():
-            raise NumError
         # Работа с базами данных, считывание нужных параметров и запись их в переменную
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
@@ -299,33 +297,27 @@ def add_contact(num, information):
         con.close()
         return 0
     # Действия исключений (Exception Actions)
-    except NumError:
-        return 4001
     except NoNumError:
-        return 4002
+        return 4001
     except InfoError:
-        return 4003
+        return 4002
     except ContactError:
-        return 4004
+        return 4003
     except Exception as e:
         print(f'{e} | {type(e)}')
         return 522
 
 
-def edit_contact(num, information):
+def edit_contact(text: str, information: str) -> int:
     """Выполнение редактирования контактной книги (Performing Contact Book editing)"""
     try:
         # Считывание и обработка данных (Data reading and processing)
-        num = num.replace('-', '').replace(' ', '').strip()
         # Проверка на правильность номера (Checking for the correctness of the number)
+        num = only_num(text)
         if not num:
             raise NoNumError
-        if num[0] == '8' and len(num) == 11:
+        if num[0] == '8' and len(num) == 11 and text.strip()[0] != '+':
             num = f"7{num[1:]}"
-        else:
-            num = num.lstrip('+')
-        if not num.isdigit():
-            raise NumError
         # Работа с базами данных, считывание нужных параметров и запись их в переменную
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
@@ -352,33 +344,27 @@ def edit_contact(num, information):
         con.close()
         return 0
     # Действия исключений (Exception Actions)
-    except NumError:
-        return 4001
     except NoNumError:
-        return 4002
+        return 4001
     except InfoError:
-        return 4003
+        return 4002
     except ContactError:
-        return 4004
+        return 4003
     except Exception as e:
         print(f'{e} | {type(e)}')
         return 522
 
 
-def delete_contact(num):
+def delete_contact(text: str) -> int:
     """Выполнение удаления из книги контактов (Performing deletion from the contact book)"""
     try:
         # Считывание и обработка данных (Data reading and processing)
-        num = num.replace('-', '').replace(' ', '').strip()
         # Проверка на правильность номера (Checking for the correctness of the number)
+        num = only_num(text)
         if not num:
             raise NoNumError
-        if num[0] == '8' and len(num) == 11:
+        if num[0] == '8' and len(num) == 11 and text.strip()[0] != '+':
             num = f"7{num[1:]}"
-        else:
-            num = num.lstrip('+')
-        if not num.isdigit():
-            raise NumError
         # Работа с базами данных, считывание нужных параметров и запись их в переменную
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
@@ -401,30 +387,25 @@ def delete_contact(num):
         con.close()
         return 0
     # Действия исключений (Exception Actions)
-    except NumError:
-        return 4001
     except NoNumError:
-        return 4002
+        return 4001
     except ContactError:
-        return 4004
+        return 4003
     except Exception as e:
         print(f'{e} | {type(e)}')
         return 522
 
 
-def my_contact(text, locale, translate):
+def my_contact(text: str, locale: str, translate: bool) -> (int, list):
     """Выполнение поиска внутри книги контактов (Performing a search inside the contact book)"""
     try:
         # Считывание с главной строки (Reading from the main line)
         # Удаление лишних символов и проверка на корректность
         # (Removing extra characters and checking for correctness)
-        num = ' '
-        if text.lstrip('+').isdigit():
-            num = text.replace('-', '').replace(' ', '').strip()
-            if num[0] == '8' and len(num) == 11:
-                num = f"7{num[1:]}"
-            else:
-                num = num.lstrip('+')
+        text = text.strip()
+        num = only_num(text)
+        if text and text[0] != '+' and num and num[0] == '8' and len(num) == 11:
+            num = f"7{num[1:]}"
         # Работа с базами данных, считывание нужных параметров и запись их в переменную
         # (Working with databases, reading the necessary parameters and writing them to a variable)
         con = sqlite3.connect('data/checkbd.db')
@@ -531,16 +512,12 @@ def my_contact(text, locale, translate):
     # Действия исключений (Exception Actions)
     except ConnectError or ConnectTimeout or CloseError:
         return 499
-    except Exception as e:
-        print(f'{e} | {type(e)}')
-        return 522
+    # except Exception as e:
+    #     print(f'{e} | {type(e)}')
+    #     return 522
 
 
 """Инициализация ошибок (Error Initialization)"""
-
-
-class NumError(Exception):
-    pass
 
 
 class InfoError(Exception):
@@ -557,4 +534,6 @@ class NoNumError(Exception):
 
 """Точка входа теста (Test entry point)"""
 if __name__ == '__main__':
-    print(my_contact('em', 'ru', True))
+    st = time.time()
+    # test code
+    print(time.time() - st)

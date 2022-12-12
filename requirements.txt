@@ -11,12 +11,12 @@ httpcore==0.9.1
 httpx==0.13.3
 hyperframe==5.2.0
 idna==2.10
-pefile==2021.9.3
-pyinstaller==4.6
-pyinstaller-hooks-contrib==2021.3
+pefile==2022.5.30
+pyinstaller==5.7.0
+pyinstaller-hooks-contrib==2022.14
 PyQt5==5.15.5
 PyQt5-Qt5==5.15.2
-PyQt5-sip==12.9.0
+PyQt5-sip==12.11.0
 PyQt5-stubs==5.15.2.0
 pywin32-ctypes==0.2.0
 rfc3986==1.5.0

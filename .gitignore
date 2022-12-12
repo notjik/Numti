@@ -1,5 +1,4 @@
-/documents/
-/shelf/
-/workspace.xml
-/build/
-/venv/
+/documents
+/.idea
+/build
+/venv
